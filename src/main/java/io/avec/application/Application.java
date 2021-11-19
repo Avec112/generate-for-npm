@@ -1,4 +1,4 @@
-package com.example.application;
+package io.avec.application;
 
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;

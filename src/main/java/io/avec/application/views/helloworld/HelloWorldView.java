@@ -1,6 +1,6 @@
-package com.example.application.views.helloworld;
+package io.avec.application.views.helloworld;
 
-import com.example.application.views.MainLayout;
+import io.avec.application.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;

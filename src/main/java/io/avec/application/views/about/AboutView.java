@@ -1,6 +1,6 @@
-package com.example.application.views.about;
+package io.avec.application.views.about;
 
-import com.example.application.views.MainLayout;
+import io.avec.application.views.MainLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
