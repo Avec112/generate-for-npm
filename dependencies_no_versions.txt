@@ -3,7 +3,6 @@
 @babel/code-frame
 @babel/compat-data
 @babel/core
-@babel/core
 @babel/generator
 @babel/helper-annotate-as-pure
 @babel/helper-builder-binary-assignment-operator-visitor
@@ -154,7 +153,6 @@
 @vaadin/checkbox-group
 @vaadin/combo-box
 @vaadin/common-frontend
-@vaadin/common-frontend
 @vaadin/component-base
 @vaadin/confirm-dialog
 @vaadin/context-menu
@@ -167,9 +165,8 @@
 @vaadin/dialog
 @vaadin/email-field
 @vaadin/field-base
-@vaadin/form
+@vaadin/field-highlighter
 @vaadin/form-layout
-@vaadin/fusion-frontend
 @vaadin/grid
 @vaadin/grid-pro
 @vaadin/horizontal-layout
@@ -403,7 +400,6 @@ cache-base
 call-bind
 callsites
 camel-case
-camelcase
 caniuse-lite
 chalk
 chalk
@@ -756,6 +752,7 @@ ms
 ms
 multicast-dns
 multicast-dns-service-types
+nanoid
 nanomatch
 negotiator
 neo-async
@@ -812,7 +809,6 @@ path-to-regexp
 path-to-regexp
 path-type
 pbkdf2
-picocolors
 picocolors
 picomatch
 pify
@@ -931,6 +927,7 @@ source-map
 source-map
 source-map
 source-map
+source-map-js
 source-map-resolve
 source-map-support
 source-map-support
@@ -1014,7 +1011,6 @@ utila
 utils-merge
 uuid
 v8-compile-cache
-validator
 vary
 vm-browserify
 watchpack
