@@ -1,0 +1,23 @@
+= Generate for NPM
+
+I need a simple compiled file with all the main NPM dependencies in a simple format for current vaadin version.
+
+* Update `pom.xml` with preferred Vaadin version
+* Run `mvn clean package -Pproduction`
+* Run `mvn exec:java`
+* Input: `pnpm-lock.yaml`
+* Output:
+** `dependencies_no_versions.txt`
+** `dependencies_with_versions.txt`
+
+
+[source,bash]
+.Process dependency file (example)
+----
+prompt#> while read p; do
+pnpm v "$p" --json | grep -e "\"name\"" -e latest
+done < dependencies_no_versions.txt
+----
+
+.You might wonder why do this?
+I have a offline NPM proxy with scheduled updates. Those updates might sometime fail for some dependencies and I must update missing dependencies manually. I need to know what dependencies to update.

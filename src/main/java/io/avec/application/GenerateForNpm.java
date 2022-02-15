@@ -1,25 +1,44 @@
 package io.avec.application;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class GenerateForNpm {
 
     public void generate() {
-        List<String> dependencies = loadDependencies();
+        Set<Pair<String,String>> dependencies = loadDependencies();
         writeDependencies(dependencies);
     }
 
-    private void writeDependencies(List<String> dependencies) {
+    private void writeDependencies(Set<Pair<String,String>> dependencies) {
         Validate.notEmpty(dependencies);
 
-        try (BufferedWriter output = new BufferedWriter(new FileWriter("dependencies.txt"))) {
-            for(String dependency : dependencies) {
-                output.write(dependency + System.lineSeparator());
+        writeDependenciesWithVersions(dependencies);
+        writeDependenciesNoVersions(dependencies);
+
+    }
+
+    private void writeDependenciesNoVersions(Set<Pair<String,String>> dependencies) {
+        try (BufferedWriter output = new BufferedWriter(new FileWriter("dependencies_no_versions.txt"))) {
+            for(Pair<String, String> pair : dependencies) {
+                output.write(pair.getLeft() + System.lineSeparator());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeDependenciesWithVersions(Set<Pair<String,String>> dependencies) {
+        try (BufferedWriter output = new BufferedWriter(new FileWriter("dependencies_with_versions.txt"))) {
+            for(Pair<String, String> pair : dependencies) {
+                String dependency = pair.getLeft() + "@" + pair.getRight();
+                output.write( dependency + System.lineSeparator());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -27,14 +46,14 @@ public class GenerateForNpm {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private List<String> loadDependencies() {
-        final Set<String> dependencies = new HashSet<>();
+    private Set<Pair<String,String>> loadDependencies() {
+        final Set<Pair<String,String>> dependencies = new HashSet<>();
         try(BufferedReader input = new BufferedReader(new FileReader("pnpm-lock.yaml"))) {
             Pattern p1 = Pattern.compile("^/(.*):"); //   All packages starting with /
-            Pattern p2 = Pattern.compile("^'(.{2,})'"); // starting with 'xxx' and xxx length minimum 2
-            Pattern p3 = Pattern.compile("^(?!integrity:|node:)([0-9a-zA-Z\\_\\-\\.]+):[0-9a-zA-Z\\^\\.\\_\\-\\+\\@]+(?<!true|false)$"); // chokidar: 3.5.2
+            Pattern p2 = Pattern.compile("^'(.{2,})':(\\d+\\.\\d+\\.\\d+)"); // starting with 'xxx' and xxx length minimum 2
+            Pattern p3 = Pattern.compile("^([0-9a-zA-Z\\_\\-\\.]+):(\\d+\\.\\d+\\.\\d+)"); // chokidar: 3.5.2
 
-            boolean doMatch1 = true;
+            boolean doMatch1 = false;
             boolean doMatch2 = true;
             boolean doMatch3 = true;
 
@@ -51,14 +70,14 @@ public class GenerateForNpm {
                     int lastIndexOf = group.lastIndexOf("/");
                     group = group.substring(0, lastIndexOf);
 
-                    dependencies.add(group);
+                    dependencies.add(Pair.of(group, ""));
                 }
                 else if(m2.find() && doMatch2) {
-                    dependencies.add(m2.group(1));
+                    dependencies.add(Pair.of(m2.group(1), m2.group(2)));
                 }
 
                 else if(m3.find() && doMatch3) {
-                    dependencies.add(m3.group(1));
+                    dependencies.add(Pair.of(m3.group(1), m3.group(2)));
                 }
 
             }
@@ -67,17 +86,13 @@ public class GenerateForNpm {
             e.printStackTrace();
         }
 
-        List<String> deps = dependencies.stream()
-                .sorted()
-                .filter(s -> !(s.startsWith("@vaadin") && s.endsWith("-plugin"))) // remove|
-                .filter(s -> !(s.startsWith("@vaadin") && s.endsWith("/flow-frontend"))) // remove|
-                .filter(s -> !(s.startsWith("@vaadin") && s.endsWith("/theme-loader"))) // remove|
-                .filter(s -> !(s.startsWith("@vaadin") && s.endsWith("/form"))) // remove|
-                .toList();
+        Set<Pair<String,String>> sorted = dependencies.stream()
+                .sorted(Comparator.comparing(Pair::getLeft))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-            System.out.println("dependency count: " + deps.size());
+            System.out.println("dependency count: " + sorted.size());
 //            deps.forEach(System.out::println);
-        return deps;
+        return sorted;
     }
 
     public static void main(String[] args) {
