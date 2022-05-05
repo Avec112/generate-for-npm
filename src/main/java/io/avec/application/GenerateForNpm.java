@@ -19,31 +19,36 @@ public class GenerateForNpm {
     private void writeDependencies(Set<Pair<String,String>> dependencies) {
         Validate.notEmpty(dependencies);
 
-        writeDependenciesWithVersions(dependencies);
+//        writeDependenciesWithVersions(dependencies);
         writeDependenciesNoVersions(dependencies);
 
     }
 
     private void writeDependenciesNoVersions(Set<Pair<String,String>> dependencies) {
+        Set<String> addDependenciesOnlyOnce = new HashSet<>();
         try (BufferedWriter output = new BufferedWriter(new FileWriter("dependencies_no_versions.txt"))) {
             for(Pair<String, String> pair : dependencies) {
-                output.write(pair.getLeft() + System.lineSeparator());
+                String dependency = pair.getLeft();
+                if(!addDependenciesOnlyOnce.contains(dependency)) {
+                    output.write(dependency + System.lineSeparator());
+                    addDependenciesOnlyOnce.add(dependency);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeDependenciesWithVersions(Set<Pair<String,String>> dependencies) {
-        try (BufferedWriter output = new BufferedWriter(new FileWriter("dependencies_with_versions.txt"))) {
-            for(Pair<String, String> pair : dependencies) {
-                String dependency = pair.getLeft() + "@" + pair.getRight();
-                output.write( dependency + System.lineSeparator());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void writeDependenciesWithVersions(Set<Pair<String,String>> dependencies) {
+//        try (BufferedWriter output = new BufferedWriter(new FileWriter("dependencies_with_versions.txt"))) {
+//            for(Pair<String, String> pair : dependencies) {
+//                String dependency = pair.getLeft() + "@" + pair.getRight();
+//                output.write( dependency + System.lineSeparator());
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @SuppressWarnings("ConstantConditions")
     private Set<Pair<String,String>> loadDependencies() {
@@ -60,7 +65,7 @@ public class GenerateForNpm {
             String line;
             while((line = input.readLine()) != null) {
 
-                line = line.replaceAll(" ", ""); // remove spaces
+                line = line.replace(" ", ""); // remove spaces
                 Matcher m1 = p1.matcher(line);
                 Matcher m2 = p2.matcher(line);
                 Matcher m3 = p3.matcher(line);
